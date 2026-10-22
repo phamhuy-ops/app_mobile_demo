@@ -1,0 +1,50 @@
+{
+  "mcpServers": {
+    "AgentsRoom-MCP": {
+      "command": "node",
+      "args": [
+        "E:\\Agent Room\\AgentsRoom\\resources\\app-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_PROJECT_ID": "proj-1791622042877-liwvni",
+        "AR_PROJECT_PATH": "C:\\Users\\Admin\\source\\Android\\mapbox_demo",
+        "AR_API_BASE_URL": "https://agentsroom.dev",
+        "AR_SETTINGS_FILE": "C:\\Users\\Admin\\.agentsroom\\settings.json",
+        "AR_APP_VERSION": "1.205.0",
+        "AR_BRIDGE_FILE": "C:\\Users\\Admin\\.agentsroom\\browser-bridge.json"
+      }
+    },
+    "AgentsRoom-Test-Runner": {
+      "command": "node",
+      "args": [
+        "E:\\Agent Room\\AgentsRoom\\resources\\test-runner-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_BROWSER_BRIDGE_FILE": "C:\\Users\\Admin\\.agentsroom\\browser-bridge.json",
+        "AR_BROWSER_PROJECT_ID": "proj-1791616702725-qwpb9z",
+        "AR_PROJECT_PATH": "C:\\Users\\Admin\\source\\Android\\mapbox_demo"
+      }
+    },
+    "AgentsRoom-QA-Tester": {
+      "command": "node",
+      "args": [
+        "E:\\Agent Room\\AgentsRoom\\resources\\qa-tester-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_BROWSER_BRIDGE_FILE": "C:\\Users\\Admin\\.agentsroom\\browser-bridge.json",
+        "AR_BROWSER_PROJECT_ID": "proj-1791616702725-qwpb9z"
+      }
+    },
+    "AgentsRoom-Chrome": {
+      "command": "node",
+      "args": [
+        "E:\\Agent Room\\AgentsRoom\\resources\\browser-mcp-server.cjs"
+      ],
+      "env": {
+        "AR_BROWSER_BRIDGE_FILE": "C:\\Users\\Admin\\.agentsroom\\browser-bridge.json",
+        "AR_BROWSER_PROJECT_ID": "proj-1791616702725-qwpb9z",
+        "AR_BROWSER_KIND": "chrome"
+      }
+    }
+  }
+}

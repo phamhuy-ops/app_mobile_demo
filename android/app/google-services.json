@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "138369512578",
+    "firebase_url": "https://laptrinhmobile-skibidi-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "laptrinhmobile-skibidi",
+    "storage_bucket": "laptrinhmobile-skibidi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:138369512578:android:8eb7554dfbe077b02eb09b",
+        "android_client_info": {
+          "package_name": "com.example.mapbox_demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbCZly6zXfyTYZYcxhHDyZL2GfMWjXw24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

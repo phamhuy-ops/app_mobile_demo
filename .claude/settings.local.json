@@ -1,0 +1,108 @@
+{
+  "enabledMcpjsonServers": [
+    "AgentsRoom-Chrome",
+    "AgentsRoom-MCP",
+    "AgentsRoom-Test-Runner",
+    "AgentsRoom-QA-Tester"
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\.agentsroom\\hooks\\notify-agentsroom.py\"",
+            "async": true,
+            "_agentsroomHook": true
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\.agentsroom\\hooks\\notify-agentsroom.py\"",
+            "async": true,
+            "_agentsroomHook": true
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\.agentsroom\\hooks\\notify-agentsroom.py\"",
+            "async": true,
+            "_agentsroomHook": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\.agentsroom\\hooks\\notify-agentsroom.py\"",
+            "async": true,
+            "_agentsroomHook": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\.agentsroom\\hooks\\notify-agentsroom.py\"",
+            "async": true,
+            "_agentsroomHook": true
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\.agentsroom\\hooks\\notify-agentsroom.py\"",
+            "async": true,
+            "_agentsroomHook": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\.agentsroom\\hooks\\notify-agentsroom.py\"",
+            "async": true,
+            "_agentsroomHook": true
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__.*[bB][rR][oO][wW][sS][eE][rR].*|mcp__.*[cC][hH][rR][oO][mM][eE].*|mcp__.*[cC][hH][rR][oO][mM][iI][uU][mM].*|mcp__.*[fF][iI][rR][eE][fF][oO][xX].*|mcp__.*[wW][eE][bB][kK][iI][tT].*|mcp__.*[pP][lL][aA][yY][wW][rR][iI][gG][hH][tT].*|mcp__.*[pP][uU][pP][pP][eE][tT][eE][eE][rR].*|mcp__.*[sS][eE][lL][eE][nN][iI][uU][mM].*|mcp__.*[wW][eE][bB][dD][rR][iI][vV][eE][rR].*|mcp__.*[aA][pP][pP][iI][uU][mM].*|mcp__.*[eE][lL][eE][cC][tT][rR][oO][nN].*|mcp__.*[eE]2[eE].*|mcp__.*[tT][eE][sS][tT]-[rR][uU][nN][nN][eE][rR].*|mcp__.*[qQ][aA]-[tT][eE][sS][tT][eE][rR].*|[mM][cC][pP]__[aA][gG][eE][nN][tT][sS][rR][oO][oO][mM]-[tT][eE][sS][tT]-[rR][uU][nN][nN][eE][rR]__[rR][uU][nN]_[qQ][aA]_[tT][eE][sS][tT]",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\.agentsroom\\hooks\\notify-agentsroom.py\"",
+            "timeout": 720,
+            "_agentsroomHook": true
+          }
+        ]
+      }
+    ]
+  }
+}
