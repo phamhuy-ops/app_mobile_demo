@@ -52,7 +52,6 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
   geo.LocationPermission permission = geo.LocationPermission.denied;
   bool serviceEnabled = false;
   bool usingDemoLocation = true;
-  bool darkMap = false;
   Set<String> favorites = {};
   StreamSubscription<geo.Position>? positionSubscription;
 
@@ -71,7 +70,6 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
   Future<void> _bootstrap() async {
     try {
       usingDemoLocation = await prefs.demoLocation(fallback: true);
-      darkMap = await prefs.darkMap();
       favorites = await prefs.favorites();
     } catch (_) {
       usingDemoLocation = true;
@@ -160,7 +158,6 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
       MapScreen(
         userLocation: userLocation,
         usingDemoLocation: usingDemoLocation,
-        darkMap: darkMap,
         routeStation: routeStation,
         focusStation: focusStation,
         routeMode: routeMode,
@@ -183,16 +180,11 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
         serviceEnabled: serviceEnabled,
         permission: permission,
         usingDemoLocation: usingDemoLocation,
-        darkMap: darkMap,
         onRefresh: refreshLocation,
         onToggleDemo: (value) async {
           setState(() => usingDemoLocation = value);
           await prefs.setDemoLocation(value);
           await refreshLocation();
-        },
-        onToggleDarkMap: (value) async {
-          setState(() => darkMap = value);
-          await prefs.setDarkMap(value);
         },
         onCallEmergency: _call,
       ),

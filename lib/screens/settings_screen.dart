@@ -10,20 +10,16 @@ class SettingsScreen extends StatelessWidget {
     required this.serviceEnabled,
     required this.permission,
     required this.usingDemoLocation,
-    required this.darkMap,
     required this.onRefresh,
     required this.onToggleDemo,
-    required this.onToggleDarkMap,
     required this.onCallEmergency,
   });
 
   final bool serviceEnabled;
   final geo.LocationPermission permission;
   final bool usingDemoLocation;
-  final bool darkMap;
   final VoidCallback onRefresh;
   final ValueChanged<bool> onToggleDemo;
-  final ValueChanged<bool> onToggleDarkMap;
   final ValueChanged<String> onCallEmergency;
 
   String get permissionLabel =>
@@ -87,14 +83,6 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const _Section('Bản đồ'),
-            SettingTile(
-              icon: Icons.dark_mode_outlined,
-              title: 'Bản đồ ban đêm',
-              value: darkMap
-                  ? 'OSM đảo màu · không cần API key'
-                  : 'OpenStreetMap · không cần API key',
-              trailing: Switch(value: darkMap, onChanged: onToggleDarkMap),
-            ),
             const SettingTile(
               icon: Icons.map_outlined,
               title: 'Nguồn bản đồ & GPS',

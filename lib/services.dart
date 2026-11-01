@@ -58,7 +58,6 @@ class PhoneService {
 
 class AppPrefs {
   static const _demoKey = 'use_demo_location';
-  static const _darkMapKey = 'dark_map';
   static const _favoritesKey = 'favorite_stations';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
@@ -68,11 +67,6 @@ class AppPrefs {
 
   Future<void> setDemoLocation(bool value) async =>
       (await _prefs).setBool(_demoKey, value);
-
-  Future<bool> darkMap() async => (await _prefs).getBool(_darkMapKey) ?? false;
-
-  Future<void> setDarkMap(bool value) async =>
-      (await _prefs).setBool(_darkMapKey, value);
 
   Future<Set<String>> favorites() async =>
       ((await _prefs).getStringList(_favoritesKey) ?? const []).toSet();

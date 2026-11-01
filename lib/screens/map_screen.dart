@@ -11,35 +11,12 @@ import '../theme.dart';
 import '../widgets.dart';
 
 const _osmTileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const _nightMapFilter = ColorFilter.matrix(<double>[
-  -0.85,
-  0,
-  0,
-  0,
-  255,
-  0,
-  -0.85,
-  0,
-  0,
-  245,
-  0,
-  0,
-  -0.75,
-  0,
-  235,
-  0,
-  0,
-  0,
-  1,
-  0,
-]);
 
 class MapScreen extends StatefulWidget {
   const MapScreen({
     super.key,
     required this.userLocation,
     required this.usingDemoLocation,
-    required this.darkMap,
     required this.routeStation,
     this.focusStation,
     required this.routeMode,
@@ -49,7 +26,6 @@ class MapScreen extends StatefulWidget {
 
   final LatLng? userLocation;
   final bool usingDemoLocation;
-  final bool darkMap;
   final Station? routeStation;
   final Station? focusStation;
   final TravelMode routeMode;
@@ -191,6 +167,9 @@ class _MapScreenState extends State<MapScreen> {
             padding: const EdgeInsets.fromLTRB(48, 140, 48, 240),
           ),
         );
+        // Rotate map to align with route bearing for better orientation
+        final bearing = Distance().bearing(result.points.first, result.points.last);
+        mapController.rotate(bearing);
       }
     } catch (_) {
       if (mounted) _toast('Không thể tải tuyến đường lúc này.');
@@ -254,7 +233,7 @@ class _MapScreenState extends State<MapScreen> {
     final current = selected ?? _nearest(visibleStations);
 
     return ColoredBox(
-      color: widget.darkMap ? const Color(0xff1b2832) : const Color(0xffd8e4ea),
+      color: const Color(0xffd8e4ea),
       child: LayoutBuilder(
         builder: (context, constraints) {
           const sheetHeightFactor = 0.16;
@@ -267,9 +246,7 @@ class _MapScreenState extends State<MapScreen> {
                 options: MapOptions(
                   initialCenter: mapCenter,
                   initialZoom: 14.2,
-                  backgroundColor: widget.darkMap
-                      ? const Color(0xff1b2832)
-                      : const Color(0xffd8e4ea),
+                  backgroundColor: const Color(0xffd8e4ea),
                   onTap: (_, _) {
                     FocusScope.of(context).unfocus();
                     setState(() => query = '');
@@ -279,12 +256,6 @@ class _MapScreenState extends State<MapScreen> {
                   TileLayer(
                     urlTemplate: _osmTileUrl,
                     userAgentPackageName: 'com.example.mapbox_demo',
-                    tileBuilder: widget.darkMap
-                        ? (context, tileWidget, tile) => ColorFiltered(
-                            colorFilter: _nightMapFilter,
-                            child: tileWidget,
-                          )
-                        : null,
                   ),
                   if (route != null && route!.points.length > 1)
                     PolylineLayer(
@@ -292,9 +263,7 @@ class _MapScreenState extends State<MapScreen> {
                         Polyline(
                           points: route!.points,
                           strokeWidth: 6,
-                          color: widget.darkMap
-                              ? const Color(0xffffc14d)
-                              : navy,
+                          color: navy,
                         ),
                       ],
                     ),
@@ -304,21 +273,27 @@ class _MapScreenState extends State<MapScreen> {
                         point: mapCenter,
                         width: 44,
                         height: 44,
+                        rotate: true,
                         child: const UserMarker(),
                       ),
                       ...visibleStations.map(
-                        (station) => Marker(
-                          point: station.point,
-                          width: 46,
-                          height: 46,
-                          child: GestureDetector(
-                            onTap: () => _selectStation(station),
-                            child: StationMarker(
-                              selected: station.id == current.id,
-                              open: station.open,
+                        (station) {
+                          final isSelected = station.id == current.id;
+                          final size = isSelected ? 56.0 : 46.0;
+                          return Marker(
+                            point: station.point,
+                            width: size,
+                            height: size,
+                            rotate: true,
+                            child: GestureDetector(
+                              onTap: () => _selectStation(station),
+                              child: StationMarker(
+                                selected: isSelected,
+                                open: station.open,
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -358,7 +333,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
               Positioned(
                 left: 16,
-                bottom: fabBottom + 14,
+                bottom: fabBottom + 80,
                 child: route == null
                     ? const SizedBox.shrink()
                     : FilledButton.icon(
@@ -374,7 +349,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
               Positioned(
                 right: 16,
-                bottom: fabBottom + 16,
+                bottom: fabBottom + 80,
                 child: Column(
                   children: [
                     _RoundAction(
