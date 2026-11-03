@@ -14,6 +14,9 @@ import 'screens/stations_screen.dart';
 import 'services.dart';
 import 'theme.dart';
 
+// Điểm bắt đầu ứng dụng: chuẩn bị Flutter, dựng giao diện rồi khởi tạo Firebase.
+// Lưu ý thứ tự hiện tại: runApp chạy trước khi Firebase khởi tạo xong;
+// các màn hình hiện dùng dữ liệu cục bộ nên không chờ đọc dữ liệu Firebase.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const NaviSafeApp());
@@ -22,6 +25,7 @@ void main() async {
 );
 }
 
+/// Cấu hình toàn ứng dụng: tên, giao diện chung và màn hình gốc.
 class NaviSafeApp extends StatelessWidget {
   const NaviSafeApp({super.key});
 
@@ -34,6 +38,7 @@ class NaviSafeApp extends StatelessWidget {
   );
 }
 
+/// Quản lý trạng thái dùng chung giữa ba tab: bản đồ, trụ sở và cài đặt.
 class NaviSafeShell extends StatefulWidget {
   const NaviSafeShell({super.key});
 
@@ -42,10 +47,13 @@ class NaviSafeShell extends StatefulWidget {
 }
 
 class _NaviSafeShellState extends State<NaviSafeShell> {
+  // Tách lưu trữ và mở ứng dụng điện thoại thành dịch vụ để giao diện dễ đọc.
   final prefs = AppPrefs();
   final phone = PhoneService();
   int tab = 0;
   LatLng? userLocation;
+  // Hai biến đóng vai trò yêu cầu gửi sang tab bản đồ:
+  // routeStation để tìm đường, focusStation để di chuyển đến một trụ sở.
   Station? routeStation;
   Station? focusStation;
   TravelMode routeMode = TravelMode.walking;
@@ -63,10 +71,12 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
 
   @override
   void dispose() {
+    // Hủy luồng GPS khi màn hình bị gỡ để tránh giữ tài nguyên nền.
     positionSubscription?.cancel();
     super.dispose();
   }
 
+  /// Đọc lựa chọn đã lưu trên máy, sau đó lấy vị trí theo chế độ tương ứng.
   Future<void> _bootstrap() async {
     try {
       usingDemoLocation = await prefs.demoLocation(fallback: true);
@@ -77,7 +87,10 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
     await refreshLocation();
   }
 
+  /// Chế độ mô phỏng dùng tọa độ cố định; chế độ thật kiểm tra và xin quyền GPS.
   Future<void> refreshLocation() async {
+    // Mô phỏng giúp trình diễn trên máy ảo mà không cần tín hiệu GPS thật.
+    // Trạng thái quyền và dịch vụ ở nhánh này cũng là trạng thái mô phỏng.
     if (usingDemoLocation) {
       await positionSubscription?.cancel();
       if (mounted) {
@@ -89,6 +102,7 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
       }
       return;
     }
+    // Ghi nhận dịch vụ định vị có bật hay không và kiểm tra quyền hệ điều hành.
     serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
     permission = await geo.Geolocator.checkPermission();
     if (permission == geo.LocationPermission.denied) {
@@ -105,11 +119,13 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
           accuracy: geo.LocationAccuracy.high,
         ),
       );
+      // Lấy vị trí ban đầu, rồi nghe cập nhật khi thiết bị di chuyển.
       _setLocation(position);
       await positionSubscription?.cancel();
       positionSubscription = geo.Geolocator.getPositionStream(
         locationSettings: const geo.LocationSettings(
           accuracy: geo.LocationAccuracy.high,
+          // Ngưỡng dịch chuyển 10 mét để giảm số lần cập nhật vị trí.
           distanceFilter: 10,
         ),
       ).listen(_setLocation);
@@ -118,6 +134,7 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
     }
   }
 
+  // Sau tác vụ bất đồng bộ, kiểm tra mounted trước khi gọi setState.
   void _setLocation(geo.Position position) {
     if (!mounted) return;
     setState(
@@ -125,6 +142,7 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
     );
   }
 
+  /// Đổi trạng thái trên giao diện rồi lưu tập mã trụ sở vào bộ nhớ máy.
   Future<void> _toggleFavorite(Station station) async {
     setState(() {
       if (favorites.contains(station.id)) {
@@ -136,6 +154,7 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
     await prefs.setFavorites(favorites);
   }
 
+  /// Nhờ hệ điều hành mở ứng dụng điện thoại; báo lỗi nếu không mở được.
   Future<void> _call(String number) async {
     final ok = await phone.call(number);
     if (!ok && mounted) {
@@ -154,6 +173,8 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
 
   @override
   Widget build(BuildContext context) {
+    // Màn hình con nhận dữ liệu và callback từ màn hình cha.
+    // Callback giúp thao tác ở tab danh sách có thể chuyển sang tab bản đồ.
     final pages = [
       MapScreen(
         userLocation: userLocation,
@@ -161,6 +182,7 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
         routeStation: routeStation,
         focusStation: focusStation,
         routeMode: routeMode,
+        // Xóa yêu cầu sau khi bản đồ đã nhận để tránh xử lý lặp.
         onConsumedRoute: () => setState(() => routeStation = null),
         onConsumedFocus: () => setState(() => focusStation = null),
       ),
@@ -191,6 +213,7 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
     ];
 
     return Scaffold(
+      // IndexedStack giữ trạng thái các tab khi đổi tab, gồm cả bản đồ.
       body: IndexedStack(index: tab, children: pages),
       bottomNavigationBar: DecoratedBox(
         decoration: const BoxDecoration(
@@ -232,6 +255,7 @@ class _NaviSafeShellState extends State<NaviSafeShell> {
   }
 }
 
+/// Một nút điều hướng phía dưới; dấu gạch dưới giới hạn lớp trong thư viện Dart này.
 class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,

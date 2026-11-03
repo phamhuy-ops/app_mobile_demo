@@ -1,11 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Khai báo quyền vị trí chính xác và gần đúng; quyền lúc chạy được xin trong main.dart. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Cần Internet để tải ảnh bản đồ và gọi dịch vụ tìm đường OSRM. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Tên và biểu tượng hiển thị của ứng dụng Android. -->
     <application
         android:label="NaviSafe"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- MainActivity là điểm vào Android, nơi chứa giao diện Flutter. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -39,6 +43,8 @@
          https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <!-- Cho phép truy vấn ứng dụng xử lý văn bản và liên kết điện thoại tel:.
+         PhoneService dùng canLaunchUrl để kiểm tra trước khi mở liên kết gọi. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

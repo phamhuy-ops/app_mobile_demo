@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Bảng màu dùng chung: xanh đậm cho nhận diện, đỏ cho SOS, vàng cho yêu thích.
 const navy = Color(0xff071e32);
 const navyMid = Color(0xff0e3554);
 const signal = Color(0xffd61f2e);
@@ -9,6 +10,8 @@ const ink = Color(0xff102433);
 const muted = Color(0xff5c7384);
 const paper = Color(0xfff7f4ee);
 
+/// Cấu hình Material 3 và kiểu mặc định cho các thành phần toàn ứng dụng.
+/// Đổi ở đây sẽ áp dụng cho những widget sử dụng theme tương ứng.
 ThemeData buildNaviTheme() {
   const scheme = ColorScheme(
     brightness: Brightness.light,

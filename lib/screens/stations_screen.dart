@@ -7,6 +7,8 @@ import '../models.dart';
 import '../theme.dart';
 import '../widgets.dart';
 
+/// Danh sách trụ sở có tìm kiếm, bộ lọc, đánh dấu yêu thích và mở bản đồ.
+/// Dữ liệu dùng chung do màn hình cha truyền vào; thao tác trả về qua callback.
 class StationsScreen extends StatefulWidget {
   const StationsScreen({
     super.key,
@@ -30,10 +32,12 @@ class StationsScreen extends StatefulWidget {
 }
 
 class _StationsScreenState extends State<StationsScreen> {
+  // Chỉ giữ trạng thái bộ lọc tại đây; danh sách yêu thích được quản lý ở màn hình cha.
   String query = '';
   bool onlyOpen = false;
   bool onlyFavorites = false;
 
+  // Khoảng cách trực tiếp theo mét; dùng vị trí dự phòng nếu GPS chưa sẵn sàng.
   double distanceTo(Station station) => geo.Geolocator.distanceBetween(
     (widget.userLocation ?? defaultLocation).latitude,
     (widget.userLocation ?? defaultLocation).longitude,
@@ -43,6 +47,7 @@ class _StationsScreenState extends State<StationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Mỗi trụ sở phải đồng thời thỏa từ khóa, trạng thái trực và bộ lọc đã lưu.
     final filtered =
         stations.where((station) {
             final q = query.trim().toLowerCase();
@@ -56,6 +61,7 @@ class _StationsScreenState extends State<StationsScreen> {
             return matchesQuery && matchesOpen && matchesFav;
           }).toList()
           ..sort((a, b) {
+            // Ưu tiên điểm yêu thích, sau đó mới xếp gần đến xa trong mỗi nhóm.
             final favA = widget.favorites.contains(a.id) ? 0 : 1;
             final favB = widget.favorites.contains(b.id) ? 0 : 1;
             if (favA != favB) return favA.compareTo(favB);
@@ -130,6 +136,7 @@ class _StationsScreenState extends State<StationsScreen> {
                     station: station,
                     distance: distanceTo(station),
                     favorite: widget.favorites.contains(station.id),
+                    // Chuyển sự kiện lên màn hình cha để điều hướng hoặc lưu dữ liệu.
                     onDirections: () => widget.onDirections(station),
                     onCall: () => widget.onCall(station),
                     onToggleFavorite: () => widget.onToggleFavorite(station),

@@ -7,9 +7,11 @@
 
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
+# Áp dụng bộ quy tắc kiểm tra mã Flutter; chạy bằng flutter analyze.
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  # Không phân tích mã sinh trong build và phần cấu hình nền tảng Android/Web.
   exclude:
     - build/**
     - android/**

@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart' as geo;
 import '../theme.dart';
 import '../widgets.dart';
 
+/// Hiển thị trạng thái định vị và các tùy chọn do màn hình cha quản lý.
+/// StatelessWidget dựng lại theo dữ liệu truyền vào, không tự lưu thiết lập.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({
     super.key,
@@ -22,6 +24,7 @@ class SettingsScreen extends StatelessWidget {
   final ValueChanged<bool> onToggleDemo;
   final ValueChanged<String> onCallEmergency;
 
+  // Chuyển trạng thái quyền thành nội dung tiếng Việt cho giao diện.
   String get permissionLabel =>
       permission == geo.LocationPermission.deniedForever
       ? 'Bị từ chối vĩnh viễn'
@@ -57,6 +60,7 @@ class SettingsScreen extends StatelessWidget {
               title: 'Quyền truy cập vị trí',
               value: permissionLabel,
               onTap: () async {
+                // Mở cài đặt quyền của ứng dụng rồi yêu cầu kiểm tra lại trạng thái.
                 await geo.Geolocator.openAppSettings();
                 onRefresh();
               },
@@ -66,6 +70,7 @@ class SettingsScreen extends StatelessWidget {
               title: 'Dịch vụ định vị',
               value: serviceEnabled ? 'Đang bật' : 'Đang tắt',
               onTap: () async {
+                // Mở cài đặt dịch vụ định vị của hệ điều hành.
                 await geo.Geolocator.openLocationSettings();
                 onRefresh();
               },
@@ -76,6 +81,7 @@ class SettingsScreen extends StatelessWidget {
               value: usingDemoLocation
                   ? 'Bật · dùng khi máy ảo chưa có GPS'
                   : 'Tắt · dùng GPS thiết bị',
+              // Callback ở main.dart sẽ lưu lựa chọn và chuyển nguồn vị trí.
               trailing: Switch(
                 value: usingDemoLocation,
                 onChanged: onToggleDemo,
@@ -128,6 +134,7 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
+/// Tiêu đề nhóm cài đặt, dùng lại để thống nhất cách trình bày.
 class _Section extends StatelessWidget {
   const _Section(this.text);
   final String text;

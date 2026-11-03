@@ -10,8 +10,11 @@ import '../services.dart';
 import '../theme.dart';
 import '../widgets.dart';
 
+// Máy chủ ảnh nền: z là mức thu phóng, x và y là chỉ số ô ảnh bản đồ.
+// Ứng dụng hiện dùng flutter_map + OpenStreetMap dù tên gói là mapbox_demo.
 const _osmTileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
+/// Màn hình bản đồ: tìm trụ sở, chọn điểm, gọi điện, SOS và xem tuyến đường.
 class MapScreen extends StatefulWidget {
   const MapScreen({
     super.key,
@@ -42,6 +45,7 @@ class _MapScreenState extends State<MapScreen> {
   final phone = PhoneService();
   final searchController = TextEditingController();
 
+  // Tách điểm đang chọn khỏi điểm đã tìm đường để không hiển thị nhầm tuyến.
   Station? selected;
   TravelMode travelMode = TravelMode.walking;
   RouteResult? route;
@@ -53,6 +57,7 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     selected = _nearest(stations);
+    // Đợi khung hình đầu để bộ điều khiển đã gắn với bản đồ rồi mới thao tác.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.routeStation != null) {
         showRoute(widget.routeStation!, mode: widget.routeMode);
@@ -65,6 +70,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
+  // Nhận thay đổi từ màn hình cha: vị trí mới hoặc yêu cầu từ tab trụ sở.
   void didUpdateWidget(covariant MapScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.userLocation != null &&
@@ -94,8 +100,10 @@ class _MapScreenState extends State<MapScreen> {
     super.dispose();
   }
 
+  // Tọa độ dự phòng phục vụ hiển thị; showRoute vẫn yêu cầu userLocation có giá trị.
   LatLng get origin => widget.userLocation ?? defaultLocation;
 
+  /// Khoảng cách trực tiếp giữa hai tọa độ, không phải chiều dài tuyến đường.
   double distanceTo(Station station) => geo.Geolocator.distanceBetween(
     origin.latitude,
     origin.longitude,
@@ -103,12 +111,15 @@ class _MapScreenState extends State<MapScreen> {
     station.point.longitude,
   );
 
+  // Sao chép rồi sắp xếp để giữ nguyên thứ tự danh sách dữ liệu gốc.
   Station _nearest(List<Station> list) {
     final copy = [...list]
       ..sort((a, b) => distanceTo(a).compareTo(distanceTo(b)));
     return copy.first;
   }
 
+  /// Ưu tiên trụ sở trong 4 km; nếu không có thì lấy tối đa 4 điểm gần nhất.
+  /// Luôn bổ sung điểm đang chọn và điểm đích của tuyến để giữ marker trên bản đồ.
   List<Station> get visibleStations {
     final nearby =
         stations.where((station) => distanceTo(station) <= 4000).toList()
@@ -129,6 +140,8 @@ class _MapScreenState extends State<MapScreen> {
     return result;
   }
 
+  /// Tìm trong dữ liệu cục bộ theo tên hoặc địa chỉ, không phân biệt hoa thường.
+  /// Chưa chuẩn hóa dấu tiếng Việt nên từ khóa không dấu có thể không khớp.
   List<Station> get searchHits {
     final q = query.trim().toLowerCase();
     if (q.isEmpty) return const [];
@@ -141,6 +154,7 @@ class _MapScreenState extends State<MapScreen> {
         .toList();
   }
 
+  /// Luồng chỉ đường: bật trạng thái tải → gọi OSRM → vẽ tuyến → căn khung nhìn.
   Future<void> showRoute(Station station, {required TravelMode mode}) async {
     if (widget.userLocation == null) {
       _toast('Chưa lấy được vị trí GPS hiện tại.');
@@ -158,16 +172,18 @@ class _MapScreenState extends State<MapScreen> {
         destination: station.point,
         mode: mode,
       );
+      // Người dùng có thể rời màn hình trong khi đang chờ phản hồi mạng.
       if (!mounted) return;
       setState(() => route = result);
       if (result.points.length > 1) {
+        // Bao toàn bộ tuyến trong khung nhìn, chừa chỗ cho thanh tìm kiếm và bảng dưới.
         mapController.fitCamera(
           CameraFit.bounds(
             bounds: LatLngBounds.fromPoints(result.points),
             padding: const EdgeInsets.fromLTRB(48, 140, 48, 240),
           ),
         );
-        // Rotate map to align with route bearing for better orientation
+        // Xoay bản đồ theo góc từ đầu đến cuối tuyến; không phải la bàn GPS thời gian thực.
         final bearing = Distance().bearing(result.points.first, result.points.last);
         mapController.rotate(bearing);
       }
@@ -178,6 +194,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  /// Xóa tuyến đang xem và trạng thái tải khỏi giao diện.
   void exitNavigation() {
     setState(() {
       route = null;
@@ -196,6 +213,7 @@ class _MapScreenState extends State<MapScreen> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
+  /// Rung phản hồi rồi mở bảng số khẩn cấp và trụ sở gần nhất theo khoảng cách trực tiếp.
   Future<void> _openSos() async {
     HapticFeedback.heavyImpact();
     final nearest = _nearest(stations);
@@ -215,6 +233,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  /// Chọn trụ sở, xóa nội dung tìm kiếm và đưa tâm bản đồ đến điểm đó.
   void _selectStation(Station station, {bool routeNow = false}) {
     setState(() {
       selected = station;
@@ -239,6 +258,7 @@ class _MapScreenState extends State<MapScreen> {
           const sheetHeightFactor = 0.16;
           final sheetClearance = constraints.maxHeight * sheetHeightFactor + 24;
           final fabBottom = sheetClearance.toDouble();
+          // Stack xếp lớp: bản đồ ở dưới, tìm kiếm và nút nổi ở trên, bảng thông tin ở đáy.
           return Stack(
             children: [
               FlutterMap(
@@ -253,10 +273,12 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
                 children: [
+                  // Lớp ảnh nền được tải qua Internet.
                   TileLayer(
                     urlTemplate: _osmTileUrl,
                     userAgentPackageName: 'com.example.mapbox_demo',
                   ),
+                  // Nối các tọa độ OSRM thành đường gấp khúc trên bản đồ.
                   if (route != null && route!.points.length > 1)
                     PolylineLayer(
                       polylines: [
@@ -267,6 +289,7 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                       ],
                     ),
+                  // Lớp đánh dấu vị trí người dùng và các trụ sở đang hiển thị.
                   MarkerLayer(
                     markers: [
                       Marker(
@@ -297,6 +320,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ],
                   ),
+                  // Hiển thị ghi công nguồn dữ liệu bản đồ OpenStreetMap.
                   const SimpleAttributionWidget(
                     source: Text(
                       'OpenStreetMap contributors',
@@ -394,6 +418,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 
+/// Ô tìm kiếm và nhãn cho biết vị trí đang mô phỏng hay lấy từ thiết bị.
 class _SearchHeader extends StatelessWidget {
   const _SearchHeader({
     required this.controller,
@@ -473,6 +498,7 @@ class _SearchHeader extends StatelessWidget {
   }
 }
 
+/// Danh sách gợi ý hiển thị tối đa bốn kết quả; chọn một dòng để định vị trụ sở.
 class _SearchResults extends StatelessWidget {
   const _SearchResults({
     required this.hits,
@@ -513,6 +539,7 @@ class _SearchResults extends StatelessWidget {
   }
 }
 
+/// Nhãn số lượng trụ sở đang được đánh dấu trên bản đồ.
 class _CountChip extends StatelessWidget {
   const _CountChip({required this.count});
   final int count;
@@ -535,6 +562,7 @@ class _CountChip extends StatelessWidget {
   );
 }
 
+/// Nút tròn dùng lại cho thao tác về vị trí hiện tại và mở SOS.
 class _RoundAction extends StatelessWidget {
   const _RoundAction({
     required this.icon,
@@ -564,6 +592,7 @@ class _RoundAction extends StatelessWidget {
   );
 }
 
+/// Bảng thông tin điểm đang chọn, phương thức di chuyển và nút gọi/chỉ đường.
 class _MapSheet extends StatelessWidget {
   const _MapSheet({
     required this.station,
@@ -587,6 +616,7 @@ class _MapSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Khi chưa có tuyến dùng khoảng cách trực tiếp; có tuyến thì dùng số liệu OSRM.
     final distanceLabel = route == null
         ? formatDistance(distance)
         : '${formatDistance(route!.distanceMeters)} · ${formatDuration(route!.durationSeconds)}';
@@ -727,6 +757,7 @@ class _MapSheet extends StatelessWidget {
   }
 }
 
+/// Nút chọn phương thức; việc gọi lại định tuyến được giao cho màn hình cha.
 class _TravelModeButton extends StatelessWidget {
   const _TravelModeButton({
     required this.mode,
@@ -800,6 +831,7 @@ class _TravelModeButton extends StatelessWidget {
   }
 }
 
+/// Bảng liên hệ khẩn cấp có tọa độ để người dùng tham khảo; không tự gửi vị trí.
 class _SosSheet extends StatelessWidget {
   const _SosSheet({
     required this.nearest,

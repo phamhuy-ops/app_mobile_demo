@@ -2,9 +2,16 @@ import 'package:latlong2/latlong.dart';
 
 import 'models.dart';
 
+// Nguồn dữ liệu cục bộ của bản mẫu, chưa tải danh sách trụ sở từ Firebase.
+// LatLng nhận vĩ độ trước, kinh độ sau.
+
+// Tọa độ HUTECH khu E dùng để mô phỏng vị trí khi trình diễn.
 const hutechKhuELocation = LatLng(10.855111458774154, 106.785421837618);
+// Vị trí dự phòng khi chưa lấy được tọa độ của thiết bị.
 const defaultLocation = hutechKhuELocation;
 
+// Mỗi id cần ổn định vì danh sách yêu thích lưu theo mã này.
+// Giờ làm việc và trạng thái là thông tin tĩnh, không cập nhật thời gian thực.
 const stations = <Station>[
   Station(
     id: 'cong-an-p-long-truong',

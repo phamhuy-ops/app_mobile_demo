@@ -4,6 +4,9 @@ import 'models.dart';
 import 'services.dart';
 import 'theme.dart';
 
+// Các thành phần giao diện dùng chung; xử lý nghiệp vụ nằm ở màn hình hoặc dịch vụ.
+
+/// Biểu tượng trụ sở, có thể điều chỉnh kích thước tùy nơi sử dụng.
 class StationAvatar extends StatelessWidget {
   const StationAvatar({super.key, this.open = true, this.size = 44});
   final bool open;
@@ -21,6 +24,7 @@ class StationAvatar extends StatelessWidget {
   );
 }
 
+/// Nhãn trạng thái lấy trực tiếp từ dữ liệu trụ sở, không tự kiểm tra giờ làm việc.
 class StatusChip extends StatelessWidget {
   const StatusChip({super.key, required this.station});
   final Station station;
@@ -44,6 +48,7 @@ class StatusChip extends StatelessWidget {
   );
 }
 
+/// Dấu tròn biểu diễn vị trí người dùng trên bản đồ.
 class UserMarker extends StatelessWidget {
   const UserMarker({super.key});
 
@@ -59,6 +64,7 @@ class UserMarker extends StatelessWidget {
   );
 }
 
+/// Marker đổi màu và kích thước biểu tượng khi trụ sở được chọn.
 class StationMarker extends StatelessWidget {
   const StationMarker({super.key, required this.selected, required this.open});
   final bool selected;
@@ -81,6 +87,8 @@ class StationMarker extends StatelessWidget {
   );
 }
 
+/// Thẻ thông tin trụ sở: địa chỉ, số gọi, giờ làm việc và các nút thao tác.
+/// Các callback chuyển sự kiện ra ngoài; thẻ không tự lưu yêu thích hay tìm đường.
 class StationCard extends StatelessWidget {
   const StationCard({
     super.key,
@@ -201,6 +209,7 @@ class StationCard extends StatelessWidget {
   }
 }
 
+/// Dòng cài đặt dùng lại: nội dung, thao tác khi chạm và thành phần bên phải tùy chọn.
 class SettingTile extends StatelessWidget {
   const SettingTile({
     super.key,

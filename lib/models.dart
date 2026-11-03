@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
+// Các kiểu dữ liệu dùng chung, giúp màn hình và dịch vụ trao đổi có cấu trúc.
+
+/// Ba phương thức di chuyển mà giao diện cho phép chọn.
 enum TravelMode { walking, cycling, motorbike }
 
+/// Bổ sung nhãn, biểu tượng và hồ sơ định tuyến cho mỗi phương thức.
 extension TravelModeX on TravelMode {
   String get label => switch (this) {
     TravelMode.walking => 'Đi bộ',
@@ -16,6 +20,7 @@ extension TravelModeX on TravelMode {
     TravelMode.motorbike => Icons.two_wheeler,
   };
 
+  // Xe máy đang dùng hồ sơ ô tô (car), chưa có hồ sơ xe máy chuyên biệt.
   String get osrmProfile => switch (this) {
     TravelMode.walking => 'foot',
     TravelMode.cycling => 'bike',
@@ -23,6 +28,8 @@ extension TravelModeX on TravelMode {
   };
 }
 
+/// Một trụ sở: mã định danh, thông tin liên hệ, tọa độ và trạng thái hiển thị.
+/// open là dữ liệu có sẵn, không được tự tính theo giờ hiện tại.
 class Station {
   const Station({
     required this.id,
@@ -45,6 +52,7 @@ class Station {
   final bool open;
 }
 
+/// Kết quả định tuyến: các điểm vẽ đường, tổng chiều dài (m) và thời gian (giây).
 class RouteResult {
   const RouteResult({
     required this.points,
@@ -57,6 +65,7 @@ class RouteResult {
   final double durationSeconds;
 }
 
+/// Thông tin hiển thị và số điện thoại của một lựa chọn khẩn cấp.
 class EmergencyContact {
   const EmergencyContact({
     required this.code,
@@ -71,6 +80,7 @@ class EmergencyContact {
   final String number;
 }
 
+// Danh mục dùng cho bảng SOS trên bản đồ.
 const emergencyContacts = [
   EmergencyContact(
     code: '113',
